@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Động Học Cơ Cấu 4 Khâu Bản Lề</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .canvas-container {
+            position: relative;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen p-3 md:p-6">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto bg-slate-900 text-white rounded-xl p-4 md:p-6 mb-6 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-blue-400">PHÂN TÍCH ĐỘNG HỌC CƠ CẤU 4 KHÂU BẢN LỀ</h1>
+            <p class="text-xs md:text-sm text-slate-400 mt-1">Lược đồ vị trí quay động + Họa đồ vận tốc & họa đồ gia tốc cố định ở trạng thái tĩnh (PA1 - PA2)</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="loadPreset(1)" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-all shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-bookmark"></i> Phương Án 1
+            </button>
+            <button onclick="loadPreset(2)" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition-all shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-bookmark"></i> Phương Án 2
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Control Panel -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Input Card -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-600"></i> THÔNG SỐ ĐẦU VÀO
+                </h2>
+
+                <div class="space-y-3 text-sm">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">l<sub>AB</sub> (Khâu 2) [m]</label>
+                            <input type="number" id="l2" value="5.0" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">l<sub>BC</sub> (Khâu 3) [m]</label>
+                            <input type="number" id="l3" value="4.5" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                           
+	<label class="block text-xs font-semibold text-slate-600">l<sub>BM</sub> [m]</label>
+
+                            <input type="number" id="l_BM" value="2.0" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            
+	 <label class="block text-xs font-semibold text-slate-600">l<sub>ME</sub> [m]</label>
+
+                            <input type="number" id="l_ME" value="1.0" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                             
+	 <label class="block text-xs font-semibold text-slate-600">l<sub>CD</sub> (Khâu 4) [m]</label>
+
+                            <input type="number" id="l4" value="6.0" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            
+	 <label class="block text-xs font-semibold text-slate-600">l<sub>AD</sub> (Giá 1) [m]</label>
+
+                            <input type="number" id="l1" value="3.0" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <hr class="my-2 border-slate-100">
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">φ₂ tĩnh (°)</label>
+                            <input type="number" id="phi2" value="10" step="1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">ω₂ (rad/s)</label>
+                            <input type="number" id="w2" value="5" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">ε₂ (rad/s²)</label>
+                            <input type="number" id="eps2" value="10" step="0.1" class="w-full mt-1 p-2 border rounded-md bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1 text-xs">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Chiều ω₂</label>
+                            <select id="w2_dir" class="w-full p-2 border rounded-md bg-slate-50">
+                                <option value="cw">Cùng chiều KĐH (-)</option>
+                                <option value="ccw">Ngược chiều KĐH (+)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Chiều ε₂</label>
+                            <select id="eps2_dir" class="w-full p-2 border rounded-md bg-slate-50">
+                                <option value="cw">Cùng chiều KĐH (-)</option>
+                                <option value="ccw">Ngược chiều KĐH (+)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-2 mt-5">
+                    <button onclick="stopAnimation(); capNhatTinh();" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs md:text-sm transition-all shadow-md flex justify-center items-center gap-1.5">
+                        <i class="fa-solid fa-calculator"></i> CẬP NHẬT TĨNH
+                    </button>
+                    <button id="animBtn" onclick="toggleAnimation()" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs md:text-sm transition-all shadow-md flex justify-center items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> QUAY CƠ CẤU
+                    </button>
+                </div>
+            </div>
+
+            <!-- Structural Analysis Card -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-sitemap text-blue-600"></i> PHÂN TÍCH CẤU TRÚC
+                </h2>
+                <div id="structResult" class="text-xs space-y-2 text-slate-700">
+                    <!-- Dynamic insertion -->
+                </div>
+            </div>
+
+            <!-- Numerical Results Output Card -->
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-blue-600"></i> BẢNG KẾT QUẢ VẬN TỐC & GIA TỐC (TĨNH)
+                </h2>
+                <div id="numResult" class="font-mono text-xs bg-slate-900 text-emerald-400 p-3 rounded-lg overflow-x-auto leading-relaxed border border-slate-800 ">
+                    Đang tính toán...
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Visual Canvases Panel -->
+        <div class="lg:col-span-8 space-y-6">
+
+            <!-- Panel 1: Position Diagram (Dynamic) -->
+            <div class="canvas-container p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                        <span class="w-3 h-3 bg-blue-600 rounded-full inline-block"></span>
+                        1. LƯỢC ĐỒ VỊ TRÍ CƠ CẤU (ĐỘNG)
+                    </h3>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full border border-slate-200">
+                        φ₂ hiện tại: <span id="currentPhi2Text" class="text-blue-600 font-bold">10°</span>
+                    </span>
+                </div>
+                <canvas id="posCanvas" class="w-full h-[360px] rounded-lg border border-slate-100 bg-slate-50"></canvas>
+            </div>
+
+            <!-- Panel 2 & 3 Grid (Static) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Panel 2: Velocity Polygon (Static) -->
+                <div class="canvas-container p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-800 text-xs md:text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 bg-emerald-600 rounded-full inline-block"></span>
+                            2. HỌA ĐỒ VẬN TỐC (TĨNH)
+                        </h3>
+                        <span class="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-mono">
+                            p → b, c, m, e
+                        </span>
+                    </div>
+                    <canvas id="velCanvas" class="w-full h-[300px] rounded-lg border border-slate-100 bg-slate-50"></canvas>
+                </div>
+
+                <!-- Panel 3: Acceleration Polygon (Static) -->
+                <div class="canvas-container p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-800 text-xs md:text-sm flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 bg-rose-600 rounded-full inline-block"></span>
+                            3. HỌA ĐỒ GIA TỐC (TĨNH)
+                        </h3>
+                        <span class="text-xs text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200 font-mono">
+                            π → b', c', m', e'
+                        </span>
+                    </div>
+                    <canvas id="accCanvas" class="w-full h-[300px] rounded-lg border border-slate-100 bg-slate-50"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let isAnimating = false;
+        let animationId = null;
+        let dynamicPhi2 = 10;
+
+        const presets = {
+            1: { l2: 5.0, l3: 4.5, l_BM: 2.0, l_ME: 1.0, l4: 6.0, l1: 3.0, phi2: 10, w2: 5, w2_dir: 'cw', eps2: 10, eps2_dir: 'cw' },
+            2: { l2: 5.0, l3: 4.0, l_BM: 2.5, l_ME: 1.5, l4: 6.0, l1: 3.0, phi2: 20, w2: 5, w2_dir: 'cw', eps2: 20, eps2_dir: 'ccw' }
+        };
+
+        window.onload = function() {
+            loadPreset(1);
+        };
+
+        function loadPreset(num) {
+            stopAnimation();
+            const p = presets[num];
+            document.getElementById('l1').value = p.l1;
+            document.getElementById('l2').value = p.l2;
+            document.getElementById('l3').value = p.l3;
+            document.getElementById('l4').value = p.l4;
+            document.getElementById('l_BM').value = p.l_BM;
+            document.getElementById('l_ME').value = p.l_ME;
+            document.getElementById('phi2').value = p.phi2;
+            document.getElementById('w2').value = p.w2;
+            document.getElementById('w2_dir').value = p.w2_dir;
+            document.getElementById('eps2').value = p.eps2;
+            document.getElementById('eps2_dir').value = p.eps2_dir;
+
+            dynamicPhi2 = p.phi2;
+            capNhatTinh();
+        }
+
+        function toggleAnimation() {
+            if (isAnimating) {
+                stopAnimation();
+            } else {
+                startAnimation();
+            }
+        }
+
+        function startAnimation() {
+            isAnimating = true;
+            const btn = document.getElementById('animBtn');
+            btn.innerHTML = '<i class="fa-solid fa-pause"></i> DỪNG QUAY';
+            btn.className = btn.className.replace('bg-amber-600', 'bg-rose-600').replace('hover:bg-amber-700', 'hover:bg-rose-700');
+            
+            function animateFrame() {
+                if (!isAnimating) return;
+                
+                dynamicPhi2 = (dynamicPhi2 + 1.2) % 360;
+                document.getElementById('currentPhi2Text').innerText = dynamicPhi2.toFixed(1) + '°';
+
+                updatePositionDiagramOnly();
+
+                animationId = requestAnimationFrame(animateFrame);
+            }
+            animationId = requestAnimationFrame(animateFrame);
+        }
+
+        function stopAnimation() {
+            isAnimating = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            const btn = document.getElementById('animBtn');
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> QUAY CƠ CẤU';
+                btn.className = btn.className.replace('bg-rose-600', 'bg-amber-600').replace('hover:bg-rose-700', 'hover:bg-amber-700');
+            }
+        }
+
+        function capNhatTinh() {
+            const l1 = parseFloat(document.getElementById('l1').value);
+            const l2 = parseFloat(document.getElementById('l2').value);
+            const l3 = parseFloat(document.getElementById('l3').value);
+            const l4 = parseFloat(document.getElementById('l4').value);
+            const l_BM = parseFloat(document.getElementById('l_BM').value);
+            const l_ME = parseFloat(document.getElementById('l_ME').value);
+            const phi2_deg = parseFloat(document.getElementById('phi2').value);
+            
+            dynamicPhi2 = phi2_deg;
+            document.getElementById('currentPhi2Text').innerText = phi2_deg.toFixed(0) + '°';
+
+            let w2_val = parseFloat(document.getElementById('w2').value);
+            if (document.getElementById('w2_dir').value === 'cw') w2_val = -Math.abs(w2_val);
+            else w2_val = Math.abs(w2_val);
+
+            let eps2_val = parseFloat(document.getElementById('eps2').value);
+            if (document.getElementById('eps2_dir').value === 'cw') eps2_val = -Math.abs(eps2_val);
+            else eps2_val = Math.abs(eps2_val);
+
+            analyzeStructure(l1, l2, l3, l4);
+
+            const staticResult = calculateKinematics(l1, l2, l3, l4, l_BM, l_ME, phi2_deg, w2_val, eps2_val);
+            if (!staticResult) return;
+
+            drawPositionDiagram(staticResult);
+            drawVelocityPolygon(staticResult);
+            drawAccelerationPolygon(staticResult);
+            updateResultText(staticResult);
+        }
+
+        function updatePositionDiagramOnly() {
+            const l1 = parseFloat(document.getElementById('l1').value);
+            const l2 = parseFloat(document.getElementById('l2').value);
+            const l3 = parseFloat(document.getElementById('l3').value);
+            const l4 = parseFloat(document.getElementById('l4').value);
+            const l_BM = parseFloat(document.getElementById('l_BM').value);
+            const l_ME = parseFloat(document.getElementById('l_ME').value);
+
+            const dynResult = calculateKinematics(l1, l2, l3, l4, l_BM, l_ME, dynamicPhi2, 1, 1, true);
+            if (dynResult) {
+                drawPositionDiagram(dynResult);
+            }
+        }
+
+        function analyzeStructure(l1, l2, l3, l4) {
+            const n = 3; 
+            const p5 = 4; 
+            const p4 = 0; 
+            const W = 3 * n - 2 * p5 - p4;
+
+            const lengths = [l1, l2, l3, l4].sort((a, b) => a - b);
+            const S = lengths[0];
+            const L = lengths[3];
+            const P = lengths[1];
+            const Q = lengths[2];
+            const isGrashof = (S + L) <= (P + Q);
+
+            let mechanismType = "";
+            if (isGrashof) {
+                if (S === l1) mechanismType = "Cơ cấu 2 Tay quay (Double Crank)";
+                else if (S === l2) mechanismType = "Cơ cấu Tay quay - Con lắc (Crank-Rocker)";
+                else if (S === l3) mechanismType = "Cơ cấu 2 Con lắc (Double Rocker)";
+                else if (S === l4) mechanismType = "Cơ cấu Tay quay - Con lắc (Crank-Rocker)";
+            } else {
+                mechanismType = "Cơ cấu 2 Con lắc (Non-Grashof Double Rocker)";
+            }
+
+            const structHTML = `
+                <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <p class="font-medium text-slate-800">• Bậc tự do: <span class="font-bold text-blue-600">W = 3(3) - 2(4) = ${W}</span></p>
+                    <p class="text-slate-500 text-[11px] mt-0.5">Cơ cấu có 1 bậc tự do, khâu dẫn 2.</p>
+                </div>
+                <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <p class="font-medium text-slate-800">• Grashof: <span class="font-bold ${isGrashof ? 'text-emerald-600':'text-amber-600'}">S+L (${(S+L).toFixed(1)}) ${isGrashof ? '≤' : '>'} P+Q (${(P+Q).toFixed(1)})</span></p>
+                    <p class="text-blue-700 font-semibold mt-1">➔ Xếp loại: ${mechanismType}</p>
+                </div>
+            `;
+            document.getElementById('structResult').innerHTML = structHTML;
+        }
+
+        function calculateKinematics(l1, l2, l3, l4, l_BM, l_ME, phi2_deg, w2, eps2, isSilent = false) {
+            const phi2 = phi2_deg * Math.PI / 180.0;
+
+            const xA = 0, yA = 0;
+            const xD = l1, yD = 0;
+            const xB = l2 * Math.cos(phi2), yB = l2 * Math.sin(phi2);
+
+            const BD = Math.sqrt(Math.pow(xD - xB, 2) + Math.pow(yD - yB, 2));
+            if (BD > (l3 + l4) || BD < Math.abs(l3 - l4)) {
+                if (!isAnimating && !isSilent) alert(`Lỗi hình học: Góc φ₂ = ${phi2_deg.toFixed(1)}° không thể lắp ghép cơ cấu!`);
+                return null;
+            }
+
+            const gamma = Math.atan2(yB - yD, xB - xD);
+            const alpha = Math.acos((l4*l4 + BD*BD - l3*l3) / (2 * l4 * BD));
+
+            const real_phi4 = gamma + alpha; 
+            const xC = xD + l4 * Math.cos(real_phi4);
+            const yC = yD + l4 * Math.sin(real_phi4);
+            
+            const real_phi3 = Math.atan2(yC - yB, xC - xB);
+
+            const xM = xB + l_BM * Math.cos(real_phi3);
+            const yM = yB + l_BM * Math.sin(real_phi3);
+
+            const phi_ME = real_phi3 - Math.PI / 2.0; 
+            const xE = xM + l_ME * Math.cos(phi_ME);
+            const yE = yM + l_ME * Math.sin(phi_ME);
+
+            // Velocity Analysis
+            const a11 = -l3 * Math.sin(real_phi3), a12 = l4 * Math.sin(real_phi4);
+            const a21 =  l3 * Math.cos(real_phi3), a22 = -l4 * Math.cos(real_phi4);
+            const detA = a11 * a22 - a12 * a21;
+
+            const b1_v =  l2 * w2 * Math.sin(phi2);
+            const b2_v = -l2 * w2 * Math.cos(phi2);
+
+            const w3 = (b1_v * a22 - a12 * b2_v) / detA;
+            const w4 = (b2_v * a11 - a21 * b1_v) / detA;
+
+            const vB_x = -l2 * w2 * Math.sin(phi2);
+            const vB_y =  l2 * w2 * Math.cos(phi2);
+            const vB = Math.hypot(vB_x, vB_y);
+
+            const vCB_x = -l3 * w3 * Math.sin(real_phi3);
+            const vCB_y =  l3 * w3 * Math.cos(real_phi3);
+
+            const vC_x = vB_x + vCB_x;
+            const vC_y = vB_y + vCB_y;
+            const vC = Math.hypot(vC_x, vC_y);
+
+            const vMB_x = -l_BM * w3 * Math.sin(real_phi3);
+            const vMB_y =  l_BM * w3 * Math.cos(real_phi3);
+            const vM_x = vB_x + vMB_x;
+            const vM_y = vB_y + vMB_y;
+            const vM = Math.hypot(vM_x, vM_y);
+
+            const vEM_x = -l_ME * w3 * Math.sin(phi_ME);
+            const vEM_y =  l_ME * w3 * Math.cos(phi_ME);
+            const vE_x = vM_x + vEM_x;
+            const vE_y = vM_y + vEM_y;
+            const vE = Math.hypot(vE_x, vE_y);
+
+            // Acceleration Analysis
+            const b1_a =  l2*eps2*Math.sin(phi2) + l2*w2*w2*Math.cos(phi2) + l3*w3*w3*Math.cos(real_phi3) - l4*w4*w4*Math.cos(real_phi4);
+            const b2_a = -l2*eps2*Math.cos(phi2) + l2*w2*w2*Math.sin(phi2) + l3*w3*w3*Math.sin(real_phi3) - l4*w4*w4*Math.sin(real_phi4);
+
+            const eps3 = (b1_a * a22 - a12 * b2_a) / detA;
+            const eps4 = (b2_a * a11 - a21 * b1_a) / detA;
+
+            const aB_x = -l2*eps2*Math.sin(phi2) - l2*w2*w2*Math.cos(phi2);
+            const aB_y =  l2*eps2*Math.cos(phi2) - l2*w2*w2*Math.sin(phi2);
+            const aB = Math.hypot(aB_x, aB_y);
+
+            const aC_x = -l4*eps4*Math.sin(real_phi4) - l4*w4*w4*Math.cos(real_phi4);
+            const aC_y =  l4*eps4*Math.cos(real_phi4) - l4*w4*w4*Math.sin(real_phi4);
+            const aC = Math.hypot(aC_x, aC_y);
+
+            const aMB_x = -l_BM*eps3*Math.sin(real_phi3) - l_BM*w3*w3*Math.cos(real_phi3);
+            const aMB_y =  l_BM*eps3*Math.cos(real_phi3) - l_BM*w3*w3*Math.sin(real_phi3);
+            const aM_x = aB_x + aMB_x;
+            const aM_y = aB_y + aMB_y;
+            const aM = Math.hypot(aM_x, aM_y);
+
+            const aEM_x = -l_ME*eps3*Math.sin(phi_ME) - l_ME*w3*w3*Math.cos(phi_ME);
+            const aEM_y =  l_ME*eps3*Math.cos(phi_ME) - l_ME*w3*w3*Math.sin(phi_ME);
+            const aE_x = aM_x + aEM_x;
+            const aE_y = aM_y + aEM_y;
+            const aE = Math.hypot(aE_x, aE_y);
+
+            return {
+                l1, l2, l3, l4, l_BM, l_ME, phi2_deg, phi2, w2, eps2,
+                xA, yA, xB, yB, xC, yC, xD, yD, xM, yM, xE, yE,
+                real_phi3, real_phi4, phi_ME,
+                w3, w4, vB, vC, vM, vE, vB_x, vB_y, vC_x, vC_y, vM_x, vM_y, vE_x, vE_y,
+                eps3, eps4, aB, aC, aM, aE, aB_x, aB_y, aC_x, aC_y, aM_x, aM_y, aE_x, aE_y
+            };
+        }
+
+        // --- DRAWING FUNCTIONS ---
+
+        function drawPositionDiagram(data) {
+            const canvas = document.getElementById('posCanvas');
+            const ctx = setupCanvas(canvas);
+            const w = canvas.width, h = canvas.height;
+
+            const maxR = data.l2 + data.l3 + data.l_ME;
+            const minX = -data.l2 - 1.5, maxX = data.l1 + data.l3 + 1.5;
+            const minY = -maxR - 1, maxY = maxR + 1;
+
+            const padding = 60;
+            const spanX = Math.max(maxX - minX, 0.1);
+            const spanY = Math.max(maxY - minY, 0.1);
+
+            const scaleX = (w - 2 * padding) / spanX;
+            const scaleY = (h - 2 * padding) / spanY;
+            const sc = Math.min(scaleX, scaleY);
+
+            const ox = w / 2 - ((minX + maxX) / 2) * sc;
+            const oy = h / 2 + ((minY + maxY) / 2) * sc;
+
+            function tX(x) { return ox + x * sc; }
+            function tY(y) { return oy - y * sc; }
+
+            ctx.beginPath();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = "#94a3b8";
+            ctx.moveTo(0, tY(0));
+            ctx.lineTo(w, tY(0));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Link 1
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#475569";
+            ctx.moveTo(tX(data.xA), tY(data.yA));
+            ctx.lineTo(tX(data.xD), tY(data.yD));
+            ctx.stroke();
+
+            // Link 2
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#2563eb";
+            ctx.moveTo(tX(data.xA), tY(data.yA));
+            ctx.lineTo(tX(data.xB), tY(data.yB));
+            ctx.stroke();
+
+            // Link 3
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "rgba(16, 185, 129, 0.12)";
+            ctx.strokeStyle = "#10b981";
+            ctx.moveTo(tX(data.xB), tY(data.yB));
+            ctx.lineTo(tX(data.xC), tY(data.yC));
+            ctx.lineTo(tX(data.xE), tY(data.yE));
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // ME segment
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#059669";
+            ctx.moveTo(tX(data.xM), tY(data.yM));
+            ctx.lineTo(tX(data.xE), tY(data.yE));
+            ctx.stroke();
+
+            // Link 4
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#d97706";
+            ctx.moveTo(tX(data.xC), tY(data.yC));
+            ctx.lineTo(tX(data.xD), tY(data.yD));
+            ctx.stroke();
+
+            drawHatch(ctx, tX(data.xA), tY(data.yA));
+            drawHatch(ctx, tX(data.xD), tY(data.yD));
+
+            const pts = [
+                { x: data.xA, y: data.yA, name: "A", pos: "bottom" },
+                { x: data.xB, y: data.yB, name: "B", pos: "top" },
+                { x: data.xC, y: data.yC, name: "C", pos: "top" },
+                { x: data.xD, y: data.yD, name: "D", pos: "bottom" },
+                { x: data.xM, y: data.yM, name: "M", pos: "top" },
+                { x: data.xE, y: data.yE, name: "E", pos: "right" }
+            ];
+
+            pts.forEach(p => {
+                ctx.beginPath();
+                ctx.fillStyle = "#0f172a";
+                ctx.arc(tX(p.x), tY(p.y), 4.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = "bold 12px Inter";
+                ctx.fillStyle = "#1e293b";
+                let dx = 7, dy = -5;
+                if (p.pos === "bottom") { dx = -4; dy = 16; }
+                if (p.pos === "right") { dx = 8; dy = 3; }
+                ctx.fillText(p.name, tX(p.x) + dx, tY(p.y) + dy);
+            });
+        }
+
+        function drawVelocityPolygon(data) {
+            const canvas = document.getElementById('velCanvas');
+            const ctx = setupCanvas(canvas);
+            const w = canvas.width, h = canvas.height;
+
+            const vPts = [
+                { x: 0, y: 0, label: "p_v" },
+                { x: data.vB_x, y: data.vB_y, label: "b", color: "#2563eb" },
+                { x: data.vC_x, y: data.vC_y, label: "c", color: "#d97706" },
+                { x: data.vM_x, y: data.vM_y, label: "m", color: "#059669" },
+                { x: data.vE_x, y: data.vE_y, label: "e", color: "#9333ea" }
+            ];
+
+            const xs = vPts.map(p => p.x);
+            const ys = vPts.map(p => p.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+            const padding = 70;
+            const spanX = Math.max(maxX - minX, 0.1) * 1.8;
+            const spanY = Math.max(maxY - minY, 0.1) * 1.8;
+
+            const scaleX = (w - 2 * padding) / spanX;
+            const scaleY = (h - 2 * padding) / spanY;
+            const scale = Math.min(scaleX, scaleY);
+
+            const ox = w / 2 - ((minX + maxX) / 2) * scale;
+            const oy = h / 2 + ((minY + maxY) / 2) * scale;
+
+            function tX(vx) { return ox + vx * scale; }
+            function tY(vy) { return oy - vy * scale; }
+
+            ctx.beginPath();
+            ctx.fillStyle = "#0f172a";
+            ctx.arc(ox, oy, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = "bold 11px Inter";
+            ctx.fillText("p", ox - 16, oy + 14);
+
+            const b = vPts[1], c = vPts[2], e = vPts[4];
+            ctx.beginPath();
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.moveTo(tX(b.x), tY(b.y));
+            ctx.lineTo(tX(c.x), tY(c.y));
+            ctx.lineTo(tX(e.x), tY(e.y));
+            ctx.closePath();
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            vPts.slice(1).forEach(p => {
+                drawArrow(ctx, ox, oy, tX(p.x), tY(p.y), p.color, 2);
+                ctx.beginPath();
+                ctx.fillStyle = p.color;
+                ctx.arc(tX(p.x), tY(p.y), 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = "bold 11px Inter";
+                ctx.fillText(p.label, tX(p.x) + 6, tY(p.y) - 4);
+            });
+        }
+
+        function drawAccelerationPolygon(data) {
+            const canvas = document.getElementById('accCanvas');
+            const ctx = setupCanvas(canvas);
+            const w = canvas.width, h = canvas.height;
+
+            const aPts = [
+                { x: 0, y: 0, label: "p_a" },
+                { x: data.aB_x, y: data.aB_y, label: "b'", color: "#2563eb" },
+                { x: data.aC_x, y: data.aC_y, label: "c'", color: "#d97706" },
+                { x: data.aM_x, y: data.aM_y, label: "m'", color: "#059669" },
+                { x: data.aE_x, y: data.aE_y, label: "e'", color: "#9333ea" }
+            ];
+
+            const xs = aPts.map(p => p.x);
+            const ys = aPts.map(p => p.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+            const padding = 70;
+            const spanX = Math.max(maxX - minX, 0.1) * 1.8;
+            const spanY = Math.max(maxY - minY, 0.1) * 1.8;
+
+            const scaleX = (w - 2 * padding) / spanX;
+            const scaleY = (h - 2 * padding) / spanY;
+            const scale = Math.min(scaleX, scaleY);
+
+            const ox = w / 2 - ((minX + maxX) / 2) * scale;
+            const oy = h / 2 + ((minY + maxY) / 2) * scale;
+
+            function tX(ax) { return ox + ax * scale; }
+            function tY(ay) { return oy - ay * scale; }
+
+            ctx.beginPath();
+            ctx.fillStyle = "#0f172a";
+            ctx.arc(ox, oy, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = "bold 11px Inter";
+            ctx.fillText("π", ox + 5, oy - 4);
+
+            const b = aPts[1], c = aPts[2], e = aPts[4];
+            ctx.beginPath();
+            ctx.strokeStyle = "#fca5a5";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.moveTo(tX(b.x), tY(b.y));
+            ctx.lineTo(tX(c.x), tY(c.y));
+            ctx.lineTo(tX(e.x), tY(e.y));
+            ctx.closePath();
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            aPts.slice(1).forEach(p => {
+                drawArrow(ctx, ox, oy, tX(p.x), tY(p.y), p.color, 2);
+                ctx.beginPath();
+                ctx.fillStyle = p.color;
+                ctx.arc(tX(p.x), tY(p.y), 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = "bold 11px Inter";
+                let dx = 10, dy = 4;
+                if (p.label === "b'") { dx = - 14; dy = 8; } 
+                if (p.label === "e'") { dx = 12; dy = 2; }  
+                if (p.label === "c'") { dx = -20; dy = 4; } 
+                ctx.fillText(p.label, tX(p.x) + dx, tY(p.y) + dy);
+
+            });
+        }
+
+        function setupCanvas(canvas) {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            return ctx;
+        }
+
+        function drawArrow(ctx, fromx, fromy, tox, toy, color, width) {
+            const headlen = 7;
+            const dx = tox - fromx;
+            const dy = toy - fromy;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.beginPath();
+            ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawHatch(ctx, x, y) {
+            ctx.beginPath();
+            ctx.fillStyle = "#64748b";
+            ctx.arc(x, y, 5, 0, Math.PI, false);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.strokeStyle = "#64748b";
+            ctx.lineWidth = 2;
+            ctx.moveTo(x - 8, y + 5);
+            ctx.lineTo(x + 8, y + 5);
+            ctx.stroke();
+        }
+
+                function updateResultText(d) {
+            const w3_dir = d.w3 >= 0 ? "Ngược chiều KĐH (+)" : "Cùng chiều KĐH (-)";
+            const w4_dir = d.w4 >= 0 ? "Ngược chiều KĐH (+)" : "Cùng chiều KĐH (-)";
+            const eps3_dir = d.eps3 >= 0 ? "Ngược chiều KĐH (+)" : "Cùng chiều KĐH (-)";
+            const eps4_dir = d.eps4 >= 0 ? "Ngược chiều KĐH (+)" : "Cùng chiều KĐH (-)";
+
+            const content = `<div class="space-y-1 text-[11px]">
+<div>
+    <p class="text-slate-400 font-bold border-b border-slate-700 pb-1 mb-1">[ VẬN TỐC GÓC ]</p>
+    <p>• ω<sub>3</sub> = ${Math.abs(d.w3).toFixed(3)} rad/s (${w3_dir})</p>
+    <p>• ω<sub>4</sub> = ${Math.abs(d.w4).toFixed(3)} rad/s (${w4_dir})</p>
+</div>
+
+<div>
+    <p class="text-slate-400 font-bold border-b border-slate-700 pb-1 mb-1">[ GIA TỐC GÓC ]</p>
+    <p>• ε<sub>3</sub> = ${Math.abs(d.eps3).toFixed(3)} rad/s² (${eps3_dir})</p>
+    <p>• ε<sub>4</sub> = ${Math.abs(d.eps4).toFixed(3)} rad/s² (${eps4_dir})</p>
+</div>
+
+<div>
+    <p class="text-slate-400 font-bold border-b border-slate-700 pb-1 mb-1">[ VẬN TỐC CÁC ĐIỂM ]</p>
+    <p>• <i>v</i><sub>B</sub> = ${d.vB.toFixed(3)} m/s</p>
+    <p>• <i>v</i><sub>C</sub> = ${d.vC.toFixed(3)} m/s</p>
+    <p>• <i>v</i><sub>M</sub> = ${d.vM.toFixed(3)} m/s</p>
+    <p>• <i>v</i><sub>E</sub> = ${d.vE.toFixed(3)} m/s</p>
+</div>
+
+<div>
+    <p class="text-slate-400 font-bold border-b border-slate-700 pb-1 mb-1">[ GIA TỐC CÁC ĐIỂM ]</p>
+    <p>• <i>a</i><sub>B</sub> = ${d.aB.toFixed(3)} m/s²</p>
+    <p>• <i>a</i><sub>C</sub> = ${d.aC.toFixed(3)} m/s²</p>
+    <p>• <i>a</i><sub>M</sub> = ${d.aM.toFixed(3)} m/s²</p>
+    <p>• <i>a</i><sub>E</sub> = ${d.aE.toFixed(3)} m/s²</p>
+</div>
+</div>`;
+
+            // Đổi sang innerHTML để hiển thị được thẻ định dạng toán học v_B, a_B
+            document.getElementById('numResult').innerHTML = content;
+        }
+    </script>
+</body>
+</html>
